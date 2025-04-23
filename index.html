@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agalludo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    input, button {
+      margin: 5px;
+    }
+    #diceButtons button {
+      margin: 5px;
+      width: 60px;
+      height: 60px;
+      font-size: 20px;
+      touch-action: manipulation;
+    }
+    .combo-box {
+      display: inline-block;
+      background-color: #e9ecef;
+      padding: 6px 10px;
+      margin: 4px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .highlight {
+      background-color: #ffeeba;
+    }
+    .badluck {
+      font-size: 12px;
+      color: #dc3545;
+      margin-top: 4px;
+    }
+    .shake {
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+    .celebrate {
+      animation: celebrate 1s ease-in-out;
+      background-color: #d4edda;
+    }
+    @keyframes celebrate {
+      0% { background-color: #fff3cd; }
+      50% { background-color: #c3e6cb; }
+      100% { background-color: #d4edda; }
+    }
+    #setup, #game {
+      transition: opacity 0.5s ease;
+    }
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .player-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .dice-animation {
+      font-size: 60px;
+      animation: bounce 0.5s ease;
+      display: inline-block;
+    }
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.3); }
+      60% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎲 Agalludo</h1>
+
+  <div id="setup">
+    <label>Jugadores (un nombre por línea):</label><br>
+    <textarea id="playersInput" placeholder="Un nombre por línea" rows="6" style="width:100%; resize:none;"></textarea>
+    <label><input type="checkbox" id="toggleDie"> Usar dado virtual</label>
+    <button onclick="startGame()">Iniciar partida</button>
+  </div>
+
+  <div id="game" style="display:none;">
+    <h2>Turno de: <span id="currentPlayer"></span></h2>
+    <p>Puntaje del turno actual: <span id="currentTurnScore">0</span></p>
+    <div id="diceButtons">
+      <label>Toca un número del dado:</label><br>
+      <button onclick="addRoll(1)">1</button>
+      <button onclick="addRoll(2)">2</button>
+      <button onclick="addRoll(3)">3</button>
+      <button onclick="addRoll(4)">4</button>
+      <button onclick="addRoll(5)">5</button>
+      <button onclick="addRoll(6)">6</button>
+    </div>
+    <div id="diceDisplay" style="margin-top:10px; font-size: 24px;"></div>
+    <button id="saveButton" onclick="savePoints()">Guardar puntos</button>
+    <p id="message" style="color:red;"></p>
+
+    <table>
+      <thead>
+        <tr><th>Jugador</th><th>Puntaje</th><th>Unos sacados 🎲</th></tr>
+      </thead>
+      <tbody id="scoreTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let players = [];
+    let scores = [];
+    let previousScores = [];
+    let onesCount = [];
+    let currentPlayerIndex = 0;
+    let currentTurnScore = 0;
+
+    let emojis = ['🐶','🐱','🦊','🐻','🐼','🐸','🐵','🦁','🐯','🐷','🐮','🐤','🦄','🐙','🐧','🐞','🦋','🦕','🐢','🐍','🐳','🐬','🦓','🦝','🦔'];
+    let playerEmojis = [];
+    let playerColors = [];
+    let gameHistory = [];
+    let useVirtualDie = false;
+
+    function startGame() {
+      const input = document.getElementById("playersInput").value.trim();
+      players = input.split("\n").map(p => p.trim()).filter(p => p);
+      if (players.length < 2 || players.length > 25) {
+        alert("Debe haber entre 2 y 25 jugadores.");
+        return;
+      }
+      const shuffled = [...emojis].sort(() => 0.5 - Math.random());
+      playerEmojis = players.map((_, i) => shuffled[i % shuffled.length]);
+      playerColors = players.map(() => '#' + Math.floor(Math.random()*16777215).toString(16));
+      localStorage.setItem("agalludo_players", JSON.stringify(players));
+
+      useVirtualDie = document.getElementById("toggleDie").checked;
+
+      scores = new Array(players.length).fill(0);
+      onesCount = new Array(players.length).fill(0);
+      previousScores = [...scores];
+      currentPlayerIndex = 0;
+      currentTurnScore = 0;
+
+      document.getElementById("setup").classList.add("hidden");
+      setTimeout(() => {
+        document.getElementById("setup").style.display = "none";
+        document.getElementById("game").style.display = "block";
+        document.getElementById("game").classList.remove("hidden");
+      }, 300);
+
+      const diceDiv = document.getElementById("diceButtons");
+      if (useVirtualDie) {
+        diceDiv.innerHTML = '<button onclick="rollVirtualDie()">Lanzar dado 🎲</button>';
+      } else {
+        diceDiv.innerHTML = '<label>Toca un número del dado:</label><br>' +
+          [1,2,3,4,5,6].map(n => `<button onclick="addRoll(${n})">${n}</button>`).join('');
+      }
+
+      document.getElementById("diceDisplay").innerHTML = "";
+
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById("currentPlayer").textContent = players[currentPlayerIndex];
+      document.getElementById("currentTurnScore").textContent = currentTurnScore;
+      const messageElement = document.getElementById("message");
+      const table = document.getElementById("scoreTable");
+      table.innerHTML = "";
+      players.forEach((p, i) => {
+        const row = document.createElement("tr");
+        if (i === currentPlayerIndex) row.classList.add("highlight");
+        row.innerHTML = `
+          <td class="player-label" style="color:${playerColors[i]}">${playerEmojis[i]} ${p}</td>
+          <td>${scores[i]}</td>
+          <td>${onesCount[i] || 0} 😬</td>
+        `;
+        table.appendChild(row);
+      });
+      
+      let message = "";
+      const possible = 101 - scores[currentPlayerIndex];
+      if (possible > 1 && possible <= 12) {
+        let combinations = [];
+        for (let i = 2; i <= 6; i++) {
+          for (let j = 2; j <= 6; j++) {
+            if (i + j === possible) combinations.push([i, j]);
+          }
+        }
+        if (combinations.length > 0) {
+          message += `¡Te faltan ${possible} puntos! Posibles combinaciones:<br>`;
+          message += combinations.map(pair => `<span class="combo-box">${pair[0]} + ${pair[1]}</span>`).join("");
+        }
+      }
+      if (onesCount[currentPlayerIndex] >= 3) {
+        message += `<br>😅 ¡Vaya suerte! Ya llevas ${onesCount[currentPlayerIndex]} unos...`;
+      }
+      messageElement.innerHTML = message;
+    }
+
+    function addRoll(value) {
+      if (![1,2,3,4,5,6].includes(value)) return;
+
+      if (value === 1) {
+        document.getElementById("message").textContent = "¡Sacaste 1! Pierdes los puntos de este turno.";
+        onesCount[currentPlayerIndex]++;
+        currentTurnScore = 0;
+        const currentRow = document.querySelectorAll("#scoreTable tr")[currentPlayerIndex];
+        if (currentRow) {
+          currentRow.classList.add("shake");
+          setTimeout(() => currentRow.classList.remove("shake"), 500);
+        }
+        nextTurn();
+      } else {
+        currentTurnScore += value;
+        updateUI();
+      }
+    }
+
+    function savePoints() {
+      const newTotal = scores[currentPlayerIndex] + currentTurnScore;
+      if (newTotal > 101) {
+        document.getElementById("message").textContent = "¡Te pasaste de 101! Pierdes los puntos del turno.";
+        currentTurnScore = 0;
+        nextTurn();
+        return;
+      }
+      if (newTotal === 100) {
+        document.getElementById("message").textContent = "¡No puedes guardar en 100! Intenta seguir lanzando.";
+        return;
+      }
+      if (newTotal === 101) {
+        scores[currentPlayerIndex] = 101;
+        const currentRow = document.querySelectorAll("#scoreTable tr")[currentPlayerIndex];
+        if (currentRow) currentRow.classList.add("celebrate");
+        updateUI();
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        const winner = players[currentPlayerIndex];
+        gameHistory.push({ winner, date: new Date().toLocaleString() });
+        localStorage.setItem("agalludo_history", JSON.stringify(gameHistory));
+        document.getElementById("message").innerHTML = `<strong>🎉 ${winner} ha ganado con 101 puntos 🎉</strong>`;
+        document.getElementById("saveButton").disabled = true;
+        document.querySelectorAll("#diceButtons button").forEach(btn => btn.disabled = true);
+        // Agregar botón de reinicio debajo del mensaje de victoria
+        const restartBtn = document.createElement("button");
+        restartBtn.textContent = "🔄 Nueva partida";
+        restartBtn.style.marginTop = "10px";
+        restartBtn.onclick = resetGame;
+        document.getElementById("message").appendChild(restartBtn);
+        return;
+      }
+      scores[currentPlayerIndex] += currentTurnScore;
+      previousScores[currentPlayerIndex] = scores[currentPlayerIndex];
+      currentTurnScore = 0;
+      nextTurn();
+    }
+
+    function nextTurn() {
+      currentTurnScore = 0;
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      updateUI();
+    }
+
+    function resetGame() {
+      document.getElementById("game").classList.add("hidden");
+      setTimeout(() => {
+        document.getElementById("game").style.display = "none";
+        document.getElementById("setup").style.display = "block";
+        document.getElementById("setup").classList.remove("hidden");
+      }, 300);
+      document.getElementById("playersInput").value = "";
+      const stored = localStorage.getItem("agalludo_history");
+      if (stored) {
+        const history = JSON.parse(stored);
+        let msg = "🏅 Historial de ganadores:\n";
+        history.slice(-5).reverse().forEach(h => {
+          msg += `- ${h.winner} (${h.date})\n`;
+        });
+        setTimeout(() => alert(msg), 500);
+      }
+    }
+
+    function rollVirtualDie() {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      const diceDisplay = document.getElementById("diceDisplay");
+      diceDisplay.innerHTML = `<span class="dice-animation">🎲 ${roll}</span>`;
+      addRoll(roll);
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</body>
+</html>
