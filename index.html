@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Agalludo</title>
   <style>
     body {
@@ -102,6 +103,51 @@
       60% { transform: scale(0.9); }
       100% { transform: scale(1); }
     }
+
+    .rolling-die {
+      display: inline-block;
+      font-size: 60px;
+      animation: roll-die 0.8s ease;
+    }
+
+    @keyframes roll-die {
+      0% { transform: rotate(0deg) scale(1); opacity: 0.2; }
+      50% { transform: rotate(720deg) scale(1.5); opacity: 0.6; }
+      100% { transform: rotate(1080deg) scale(1); opacity: 1; }
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 24px;
+        text-align: center;
+      }
+      h2 {
+        font-size: 20px;
+      }
+      button, #diceButtons button {
+        width: 100%;
+        max-width: 100%;
+        margin: 8px 0;
+        font-size: 18px;
+        height: 56px;
+      }
+      .combo-box {
+        display: block;
+        width: fit-content;
+        margin: 6px auto;
+        font-size: 16px;
+      }
+      textarea {
+        font-size: 16px;
+      }
+      table th, table td {
+        font-size: 14px;
+        padding: 6px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -182,10 +228,15 @@
 
       const diceDiv = document.getElementById("diceButtons");
       if (useVirtualDie) {
-        diceDiv.innerHTML = '<button onclick="rollVirtualDie()">Lanzar dado 🎲</button>';
+        diceDiv.innerHTML = `
+          <label>Lanzar dado:</label><br>
+          <button onclick="rollVirtualDie()">🎲</button>
+        `;
       } else {
-        diceDiv.innerHTML = '<label>Toca un número del dado:</label><br>' +
-          [1,2,3,4,5,6].map(n => `<button onclick="addRoll(${n})">${n}</button>`).join('');
+        diceDiv.innerHTML = `
+          <label>Toca un número del dado:</label><br>
+          ${[1,2,3,4,5,6].map(n => `<button onclick="addRoll(${n})">${n}</button>`).join('')}
+        `;
       }
 
       document.getElementById("diceDisplay").innerHTML = "";
@@ -194,7 +245,7 @@
     }
 
     function updateUI() {
-      document.getElementById("currentPlayer").textContent = players[currentPlayerIndex];
+      document.getElementById("currentPlayer").textContent = `${playerEmojis[currentPlayerIndex]} ${players[currentPlayerIndex]}`;
       document.getElementById("currentTurnScore").textContent = currentTurnScore;
       const messageElement = document.getElementById("message");
       const table = document.getElementById("scoreTable");
@@ -203,7 +254,7 @@
         const row = document.createElement("tr");
         if (i === currentPlayerIndex) row.classList.add("highlight");
         row.innerHTML = `
-          <td class="player-label" style="color:${playerColors[i]}">${playerEmojis[i]} ${p}</td>
+          <td class="player-label"><span style="color:${playerColors[i]}; font-weight: bold;">${playerEmojis[i]} ${p}</span></td>
           <td>${scores[i]}</td>
           <td>${onesCount[i] || 0} 😬</td>
         `;
@@ -275,14 +326,14 @@
         gameHistory.push({ winner, date: new Date().toLocaleString() });
         localStorage.setItem("agalludo_history", JSON.stringify(gameHistory));
         document.getElementById("message").innerHTML = `<strong>🎉 ${winner} ha ganado con 101 puntos 🎉</strong>`;
-        document.getElementById("saveButton").disabled = true;
-        document.querySelectorAll("#diceButtons button").forEach(btn => btn.disabled = true);
-        // Agregar botón de reinicio debajo del mensaje de victoria
+        // Agregar botón de "Nueva partida"
         const restartBtn = document.createElement("button");
         restartBtn.textContent = "🔄 Nueva partida";
         restartBtn.style.marginTop = "10px";
         restartBtn.onclick = resetGame;
         document.getElementById("message").appendChild(restartBtn);
+        document.getElementById("saveButton").disabled = true;
+        document.querySelectorAll("#diceButtons button").forEach(btn => btn.disabled = true);
         return;
       }
       scores[currentPlayerIndex] += currentTurnScore;
@@ -293,7 +344,7 @@
 
     function nextTurn() {
       currentTurnScore = 0;
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.length; // Asegura que no se pase del último jugador
       updateUI();
     }
 
@@ -305,22 +356,23 @@
         document.getElementById("setup").classList.remove("hidden");
       }, 300);
       document.getElementById("playersInput").value = "";
-      const stored = localStorage.getItem("agalludo_history");
-      if (stored) {
-        const history = JSON.parse(stored);
-        let msg = "🏅 Historial de ganadores:\n";
-        history.slice(-5).reverse().forEach(h => {
-          msg += `- ${h.winner} (${h.date})\n`;
-        });
-        setTimeout(() => alert(msg), 500);
-      }
+      scores = new Array(players.length).fill(0);
+      previousScores = [...scores];
+      onesCount = new Array(players.length).fill(0);
+      currentPlayerIndex = 0;
+      currentTurnScore = 0;
+      updateUI();
     }
 
     function rollVirtualDie() {
       const roll = Math.floor(Math.random() * 6) + 1;
       const diceDisplay = document.getElementById("diceDisplay");
-      diceDisplay.innerHTML = `<span class="dice-animation">🎲 ${roll}</span>`;
-      addRoll(roll);
+      diceDisplay.innerHTML = `<span class="rolling-die">🎲</span>`;
+
+      setTimeout(() => {
+        diceDisplay.innerHTML = `<span class="dice-animation">🎲 ${roll}</span>`;
+        addRoll(roll);
+      }, 800);
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
