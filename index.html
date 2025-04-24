@@ -5,98 +5,256 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Agalludo</title>
   <style>
+    :root {
+      --primary-color: #4A90E2;
+      --primary-dark: #357ABD;
+      --secondary-color: #F5F7FA;
+      --text-color: #2C3E50;
+      --success-color: #2ECC71;
+      --danger-color: #E74C3C;
+      --border-radius: 12px;
+      --spacing: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: var(--spacing);
       max-width: 800px;
       margin: auto;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+
+    h1 {
+      text-align: center;
+      margin: 0.5rem 0;
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: var(--text-color);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
     button {
-      padding: 12px 20px;
+      padding: 12px 24px;
       font-size: 16px;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       border: none;
-      background-color: #007bff;
+      background-color: var(--primary-color);
       color: white;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     button:hover {
-      background-color: #0056b3;
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-    input, button {
-      margin: 5px;
+
+    button:active {
+      transform: translateY(0);
     }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E1E8ED;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      margin: 8px 0;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    #diceButtons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 0.5rem 0;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     #diceButtons button {
-      margin: 5px;
-      width: 60px;
-      height: 60px;
-      font-size: 20px;
-      touch-action: manipulation;
+      width: 100%;
+      height: 80px;
+      font-size: 24px;
+      font-weight: bold;
+      background-color: white;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      transition: all 0.2s ease;
+      order: attr(data-value);
     }
+
+    #diceButtons button:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
     .combo-box {
       display: inline-block;
-      background-color: #e9ecef;
-      padding: 6px 10px;
+      background-color: white;
+      padding: 8px 16px;
       margin: 4px;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       font-size: 14px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid #E1E8ED;
     }
+
     table {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 0.5rem;
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
+      padding: 16px;
       text-align: center;
+      border-bottom: 1px solid #E1E8ED;
     }
+
+    th {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+
     .highlight {
-      background-color: #ffeeba;
+      background-color: rgba(74, 144, 226, 0.1);
     }
+
     .badluck {
-      font-size: 12px;
-      color: #dc3545;
-      margin-top: 4px;
+      font-size: 14px;
+      color: var(--danger-color);
+      margin-top: 8px;
     }
+
     .shake {
-      animation: shake 0.5s;
+      animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
     }
+
     @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
     }
+
     .celebrate {
       animation: celebrate 1s ease-in-out;
-      background-color: #d4edda;
+      background-color: var(--success-color);
+      color: white;
     }
+
     @keyframes celebrate {
-      0% { background-color: #fff3cd; }
-      50% { background-color: #c3e6cb; }
-      100% { background-color: #d4edda; }
+      0% { background-color: #FFD700; }
+      50% { background-color: var(--success-color); }
+      100% { background-color: var(--success-color); }
     }
+
     #setup, #game {
-      transition: opacity 0.5s ease;
+      background: white;
+      padding: 24px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0.5rem 0;
+      display: flex;
+      flex-direction: column;
     }
+
+    #game {
+      transform: translateX(100%);
+      opacity: 0;
+      display: none;
+    }
+
+    #game.visible {
+      transform: translateX(0);
+      opacity: 1;
+      display: flex;
+    }
+
+    #game h2 {
+      margin: 0 0 0.5rem 0;
+    }
+
     .hidden {
       opacity: 0;
+      transform: translateX(-100%);
       pointer-events: none;
+      display: none;
     }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+
     .player-label {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
+
     .dice-animation {
       font-size: 60px;
-      animation: bounce 0.5s ease;
+      animation: bounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       display: inline-block;
     }
+
     @keyframes bounce {
       0% { transform: scale(1); }
       30% { transform: scale(1.3); }
@@ -107,45 +265,521 @@
     .rolling-die {
       display: inline-block;
       font-size: 60px;
-      animation: roll-die 0.8s ease;
+      animation: roll-die 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      position: relative;
     }
 
     @keyframes roll-die {
-      0% { transform: rotate(0deg) scale(1); opacity: 0.2; }
-      50% { transform: rotate(720deg) scale(1.5); opacity: 0.6; }
-      100% { transform: rotate(1080deg) scale(1); opacity: 1; }
+      0% { 
+        transform: rotate(0deg) scale(1); 
+        opacity: 0.2;
+      }
+      20% { 
+        transform: rotate(360deg) scale(1.5);
+        opacity: 0.4;
+      }
+      40% { 
+        transform: rotate(720deg) scale(0.8);
+        opacity: 0.6;
+      }
+      60% { 
+        transform: rotate(1080deg) scale(1.3);
+        opacity: 0.8;
+      }
+      80% { 
+        transform: rotate(1440deg) scale(0.9);
+        opacity: 0.9;
+      }
+      100% { 
+        transform: rotate(1800deg) scale(1);
+        opacity: 1;
+      }
     }
+
+    .dice-result {
+      animation: diceResult 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      display: inline-block;
+      position: relative;
+    }
+
+    @keyframes diceResult {
+      0% { 
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      50% { 
+        transform: scale(1.2);
+      }
+      100% { 
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .dice-shadow {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      animation: shadowPulse 1.2s infinite;
+    }
+
+    @keyframes shadowPulse {
+      0% { 
+        transform: translateX(-50%) scale(0.8);
+        opacity: 0.2;
+      }
+      50% { 
+        transform: translateX(-50%) scale(1.2);
+        opacity: 0.4;
+      }
+      100% { 
+        transform: translateX(-50%) scale(0.8);
+        opacity: 0.2;
+      }
+    }
+
+    #message {
+      margin: 0.5rem 0;
+      padding: 12px;
+      border-radius: var(--border-radius);
+      background-color: #FFF3CD;
+      color: #856404;
+      text-align: center;
+    }
+
+    #diceDisplay {
+      text-align: center;
+      margin: 0.5rem 0;
+      min-height: 60px;
+    }
+
+    #saveButton {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 0.5rem auto;
+      height: 60px;
+      font-size: 18px;
+    }
+
     @media (max-width: 600px) {
       body {
-        padding: 10px;
-        font-size: 16px;
+        padding: 8px;
       }
+
       h1 {
-        font-size: 24px;
-        text-align: center;
+        font-size: 2rem;
+        margin: 0.25rem 0;
       }
-      h2 {
+
+      #setup, #game {
+        padding: 16px;
+        margin-top: 0.25rem;
+      }
+
+      #game h2 {
+        margin: 0 0 0.25rem 0;
+      }
+
+      #diceButtons {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 300px;
+        margin: 0.25rem auto;
+      }
+
+      #diceDisplay {
+        margin: 0.25rem 0;
+        min-height: 50px;
+      }
+
+      #message {
+        margin: 0.25rem 0;
+      }
+
+      table {
+        margin-top: 0.25rem;
+      }
+
+      #saveButton {
+        max-width: 300px;
+        margin: 0.25rem auto;
+      }
+
+      #diceButtons button {
+        height: 70px;
         font-size: 20px;
       }
-      button, #diceButtons button {
-        width: 100%;
-        max-width: 100%;
-        margin: 8px 0;
-        font-size: 18px;
-        height: 56px;
+
+      th, td {
+        padding: 12px 8px;
       }
-      .combo-box {
-        display: block;
-        width: fit-content;
-        margin: 6px auto;
-        font-size: 16px;
+
+      .dice-animation, .rolling-die {
+        font-size: 48px;
       }
-      textarea {
-        font-size: 16px;
+    }
+
+    .checkbox-container {
+      margin: 16px 0;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-label span {
+      font-size: 16px;
+      color: var(--text-color);
+    }
+
+    .setup-container {
+      background: white;
+      padding: 24px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .setup-description {
+      color: #666;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #E1E8ED;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      margin: 8px 0;
+      transition: all 0.3s ease;
+      background-color: #F8F9FA;
+      resize: none;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+
+    .die-selector {
+      margin: 24px 0;
+    }
+
+    .die-selector h3 {
+      margin-bottom: 16px;
+      color: var(--text-color);
+      font-size: 18px;
+    }
+
+    .die-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .die-option {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .die-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .die-option-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      border: 2px solid #E1E8ED;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      background-color: #F8F9FA;
+    }
+
+    .die-option input[type="radio"]:checked + .die-option-content {
+      border-color: var(--primary-color);
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+
+    .die-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .die-label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-color);
+    }
+
+    .die-description {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
+
+    .start-button {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 24px;
+    }
+
+    .start-button:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 600px) {
+      .die-options {
+        grid-template-columns: 1fr;
       }
-      table th, table td {
-        font-size: 14px;
-        padding: 6px;
+
+      .setup-container {
+        padding: 16px;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 0.5rem 0;
+    }
+
+    .secondary-button {
+      background-color: #6c757d;
+    }
+
+    .secondary-button:hover {
+      background-color: #5a6268;
+    }
+
+    .score-change {
+      animation: scoreChange 0.5s ease;
+    }
+
+    @keyframes scoreChange {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      z-index: 1000;
+      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s;
+      pointer-events: none;
+    }
+
+    @keyframes toastIn {
+      from { transform: translate(-50%, 100%); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    @keyframes toastOut {
+      from { transform: translate(-50%, 0); opacity: 1; }
+      to { transform: translate(-50%, 100%); opacity: 0; }
+    }
+
+    #message {
+      margin: 0.5rem 0;
+      padding: 12px;
+      border-radius: var(--border-radius);
+      background-color: #FFF3CD;
+      color: #856404;
+      text-align: center;
+      animation: messageIn 0.3s ease;
+    }
+
+    @keyframes messageIn {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Mejoras en la tabla de puntajes */
+    .score-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 16px;
+      margin: 8px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-card.current {
+      transform: translateX(10px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .score-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary-color);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .score-card.current::before {
+      opacity: 1;
+    }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .player-emoji {
+      font-size: 24px;
+    }
+
+    .player-name {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .score-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .score-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .ones-count {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--danger-color);
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: #E1E8ED;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-color);
+      transition: width 0.5s ease;
+    }
+
+    /* Nuevos efectos visuales */
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(74, 144, 226, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(74, 144, 226, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(74, 144, 226, 0.5); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .pop {
+      animation: pop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .glow {
+      animation: glow 2s infinite;
+    }
+
+    .slide-in {
+      animation: slideIn 0.5s ease;
+    }
+
+    /* Mejoras en los botones */
+    button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    button:active::after {
+      animation: ripple 0.6s ease-out;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
       }
     }
   </style>
@@ -155,10 +789,35 @@
   <h1>🎲 Agalludo</h1>
 
   <div id="setup">
-    <label>Jugadores (un nombre por línea):</label><br>
-    <textarea id="playersInput" placeholder="Un nombre por línea" rows="6" style="width:100%; resize:none;"></textarea>
-    <label><input type="checkbox" id="toggleDie"> Usar dado virtual</label>
-    <button onclick="startGame()">Iniciar partida</button>
+    <div class="setup-container">
+      <h2>👥 Agregar Jugadores</h2>
+      <p class="setup-description">Ingresa los nombres de los jugadores, uno por línea</p>
+      <textarea id="playersInput" placeholder="Ejemplo:&#10;Juan&#10;María&#10;Pedro" rows="6"></textarea>
+      
+      <div class="die-selector">
+        <h3>🎛️ Tipo de Dado</h3>
+        <div class="die-options">
+          <label class="die-option">
+            <input type="radio" name="dieType" value="manual" checked>
+            <div class="die-option-content">
+              <span class="die-icon">🤲</span>
+              <span class="die-label">Manual</span>
+              <span class="die-description">Toca los números del dado</span>
+            </div>
+          </label>
+          <label class="die-option">
+            <input type="radio" name="dieType" value="virtual">
+            <div class="die-option-content">
+              <span class="die-icon">🎲</span>
+              <span class="die-label">Virtual</span>
+              <span class="die-description">Lanza el dado virtual</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="start-button">🕹️ Iniciar Partida</button>
+    </div>
   </div>
 
   <div id="game" style="display:none;">
@@ -174,15 +833,13 @@
       <button onclick="addRoll(6)">6</button>
     </div>
     <div id="diceDisplay" style="margin-top:10px; font-size: 24px;"></div>
-    <button id="saveButton" onclick="savePoints()">Guardar puntos</button>
+    <div class="action-buttons">
+      <button id="saveButton" onclick="savePoints()">💾 Guardar puntos</button>
+      <button id="undoButton" onclick="undoLastAction()" class="secondary-button">↩️ Deshacer</button>
+    </div>
     <p id="message" style="color:red;"></p>
 
-    <table>
-      <thead>
-        <tr><th>Jugador</th><th>Puntaje</th><th>Unos sacados 🎲</th></tr>
-      </thead>
-      <tbody id="scoreTable"></tbody>
-    </table>
+    <div id="scoreTable"></div>
   </div>
 
   <script>
@@ -198,6 +855,27 @@
     let playerColors = [];
     let gameHistory = [];
     let useVirtualDie = false;
+    let lastAction = null;
+
+    // Sistema de sonidos
+    const sounds = {
+      roll: 'https://assets.mixkit.co/active_storage/sfx/2004/2004-preview.mp3',
+      pop: 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3',
+      error: 'https://assets.mixkit.co/active_storage/sfx/2947/2947-preview.mp3',
+      win: 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3',
+      click: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3',
+      undo: 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'
+    };
+
+    const audioCache = {};
+
+    function playSound(soundName) {
+      if (!audioCache[soundName]) {
+        audioCache[soundName] = new Audio(sounds[soundName]);
+      }
+      audioCache[soundName].currentTime = 0;
+      audioCache[soundName].play().catch(e => console.log('Error playing sound:', e));
+    }
 
     function startGame() {
       const input = document.getElementById("playersInput").value.trim();
@@ -211,7 +889,7 @@
       playerColors = players.map(() => '#' + Math.floor(Math.random()*16777215).toString(16));
       localStorage.setItem("agalludo_players", JSON.stringify(players));
 
-      useVirtualDie = document.getElementById("toggleDie").checked;
+      useVirtualDie = document.querySelector('input[name="dieType"]:checked').value === 'virtual';
 
       scores = new Array(players.length).fill(0);
       onesCount = new Array(players.length).fill(0);
@@ -219,46 +897,70 @@
       currentPlayerIndex = 0;
       currentTurnScore = 0;
 
-      document.getElementById("setup").classList.add("hidden");
-      setTimeout(() => {
-        document.getElementById("setup").style.display = "none";
-        document.getElementById("game").style.display = "block";
-        document.getElementById("game").classList.remove("hidden");
-      }, 300);
+      const setupElement = document.getElementById("setup");
+      const gameElement = document.getElementById("game");
+
+      setupElement.classList.add("hidden");
+      gameElement.style.display = "flex";
+      
+      // Forzar un reflow para que la animación funcione
+      gameElement.offsetHeight;
+      
+      gameElement.classList.add("visible");
 
       const diceDiv = document.getElementById("diceButtons");
+      const undoButton = document.getElementById("undoButton");
+      
       if (useVirtualDie) {
         diceDiv.innerHTML = `
-          <label>Lanzar dado:</label><br>
-          <button onclick="rollVirtualDie()">🎲</button>
+          <label>Tirar dado:</label><br>
+          <button onclick="rollVirtualDie()">🫳</button>
         `;
+        undoButton.style.display = "none";
       } else {
         diceDiv.innerHTML = `
           <label>Toca un número del dado:</label><br>
           ${[1,2,3,4,5,6].map(n => `<button onclick="addRoll(${n})">${n}</button>`).join('')}
         `;
+        undoButton.style.display = "block";
       }
 
       document.getElementById("diceDisplay").innerHTML = "";
-
       updateUI();
     }
 
     function updateUI() {
       document.getElementById("currentPlayer").textContent = `${playerEmojis[currentPlayerIndex]} ${players[currentPlayerIndex]}`;
-      document.getElementById("currentTurnScore").textContent = currentTurnScore;
+      const turnScoreElement = document.getElementById("currentTurnScore");
+      turnScoreElement.textContent = currentTurnScore;
+      turnScoreElement.classList.add("pop");
+      setTimeout(() => turnScoreElement.classList.remove("pop"), 300);
+
       const messageElement = document.getElementById("message");
-      const table = document.getElementById("scoreTable");
-      table.innerHTML = "";
+      const scoreTable = document.getElementById("scoreTable");
+      scoreTable.innerHTML = "";
+
       players.forEach((p, i) => {
-        const row = document.createElement("tr");
-        if (i === currentPlayerIndex) row.classList.add("highlight");
-        row.innerHTML = `
-          <td class="player-label"><span style="color:${playerColors[i]}; font-weight: bold;">${playerEmojis[i]} ${p}</span></td>
-          <td>${scores[i]}</td>
-          <td>${onesCount[i] || 0} 😬</td>
+        const card = document.createElement("div");
+        card.className = `score-card ${i === currentPlayerIndex ? 'current' : ''}`;
+        
+        const progress = (scores[i] / 101) * 100;
+        
+        card.innerHTML = `
+          <div class="player-info">
+            <span class="player-emoji">${playerEmojis[i]}</span>
+            <span class="player-name" style="color:${playerColors[i]}">${p}</span>
+          </div>
+          <div class="score-info">
+            <span class="score-value">${scores[i]}</span>
+            <span class="ones-count">${onesCount[i] || 0} 😬</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progress}%"></div>
+          </div>
         `;
-        table.appendChild(row);
+        
+        scoreTable.appendChild(card);
       });
       
       let message = "";
@@ -275,27 +977,48 @@
           message += combinations.map(pair => `<span class="combo-box">${pair[0]} + ${pair[1]}</span>`).join("");
         }
       }
-      if (onesCount[currentPlayerIndex] >= 3) {
-        message += `<br>😅 ¡Vaya suerte! Ya llevas ${onesCount[currentPlayerIndex]} unos...`;
-      }
       messageElement.innerHTML = message;
+    }
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
 
     function addRoll(value) {
       if (![1,2,3,4,5,6].includes(value)) return;
 
+      if (lastAction && lastAction.type === 'roll' && lastAction.value === 1) {
+        lastAction = null;
+      }
+
+      lastAction = {
+        type: 'roll',
+        value: value,
+        previousScore: currentTurnScore,
+        previousOnesCount: onesCount[currentPlayerIndex],
+        previousPlayerIndex: currentPlayerIndex
+      };
+
       if (value === 1) {
         document.getElementById("message").textContent = "¡Sacaste 1! Pierdes los puntos de este turno.";
         onesCount[currentPlayerIndex]++;
         currentTurnScore = 0;
-        const currentRow = document.querySelectorAll("#scoreTable tr")[currentPlayerIndex];
+        const currentRow = document.querySelectorAll(".score-card")[currentPlayerIndex];
         if (currentRow) {
           currentRow.classList.add("shake");
           setTimeout(() => currentRow.classList.remove("shake"), 500);
         }
+        showToast("¡Ups! Sacaste un 1");
+        playSound('error');
         nextTurn();
       } else {
         currentTurnScore += value;
+        showToast(`+${value} puntos`);
+        playSound('pop');
         updateUI();
       }
     }
@@ -305,16 +1028,20 @@
       if (newTotal > 101) {
         document.getElementById("message").textContent = "¡Te pasaste de 101! Pierdes los puntos del turno.";
         currentTurnScore = 0;
+        showToast("¡Te pasaste de 101!");
+        playSound('error');
         nextTurn();
         return;
       }
       if (newTotal === 100) {
         document.getElementById("message").textContent = "¡No puedes guardar en 100! Intenta seguir lanzando.";
+        showToast("¡No puedes guardar en 100!");
+        playSound('error');
         return;
       }
       if (newTotal === 101) {
         scores[currentPlayerIndex] = 101;
-        const currentRow = document.querySelectorAll("#scoreTable tr")[currentPlayerIndex];
+        const currentRow = document.querySelectorAll(".score-card")[currentPlayerIndex];
         if (currentRow) currentRow.classList.add("celebrate");
         updateUI();
         confetti({
@@ -326,53 +1053,144 @@
         gameHistory.push({ winner, date: new Date().toLocaleString() });
         localStorage.setItem("agalludo_history", JSON.stringify(gameHistory));
         document.getElementById("message").innerHTML = `<strong>🎉 ${winner} ha ganado con 101 puntos 🎉</strong>`;
-        // Agregar botón de "Nueva partida"
+        showToast("¡Felicidades! 🎉");
+        playSound('win');
         const restartBtn = document.createElement("button");
         restartBtn.textContent = "🔄 Nueva partida";
         restartBtn.style.marginTop = "10px";
         restartBtn.onclick = resetGame;
         document.getElementById("message").appendChild(restartBtn);
         document.getElementById("saveButton").disabled = true;
+        document.getElementById("undoButton").disabled = true;
         document.querySelectorAll("#diceButtons button").forEach(btn => btn.disabled = true);
         return;
       }
+
+      lastAction = {
+        type: 'save',
+        previousScore: scores[currentPlayerIndex],
+        previousTurnScore: currentTurnScore
+      };
+
       scores[currentPlayerIndex] += currentTurnScore;
       previousScores[currentPlayerIndex] = scores[currentPlayerIndex];
       currentTurnScore = 0;
+      showToast("Puntos guardados");
+      playSound('pop');
       nextTurn();
+    }
+
+    function undoLastAction() {
+      if (!lastAction) {
+        showToast("No hay acciones para deshacer");
+        playSound('error');
+        return;
+      }
+
+      if (lastAction.type === 'roll') {
+        if (lastAction.value === 1) {
+          onesCount[currentPlayerIndex] = lastAction.previousOnesCount;
+          currentTurnScore = lastAction.previousScore;
+          currentPlayerIndex = lastAction.previousPlayerIndex;
+          onesCount[currentPlayerIndex]--;
+          showToast("Deshacer último 1");
+        } else {
+          currentTurnScore = lastAction.previousScore;
+          showToast("Deshacer último lanzamiento");
+        }
+      } else if (lastAction.type === 'save') {
+        scores[currentPlayerIndex] = lastAction.previousScore;
+        currentTurnScore = lastAction.previousTurnScore;
+        showToast("Deshacer último guardado");
+      }
+
+      lastAction = null;
+      updateUI();
+      playSound('undo');
     }
 
     function nextTurn() {
       currentTurnScore = 0;
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length; // Asegura que no se pase del último jugador
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
       updateUI();
     }
 
     function resetGame() {
-      document.getElementById("game").classList.add("hidden");
+      const setupElement = document.getElementById("setup");
+      const gameElement = document.getElementById("game");
+
+      gameElement.classList.remove("visible");
+      gameElement.classList.add("hidden");
+      
       setTimeout(() => {
-        document.getElementById("game").style.display = "none";
-        document.getElementById("setup").style.display = "block";
-        document.getElementById("setup").classList.remove("hidden");
-      }, 300);
+        gameElement.style.display = "none";
+        setupElement.style.display = "flex";
+        setupElement.classList.remove("hidden");
+      }, 500);
+
       document.getElementById("playersInput").value = "";
       scores = new Array(players.length).fill(0);
       previousScores = [...scores];
       onesCount = new Array(players.length).fill(0);
       currentPlayerIndex = 0;
       currentTurnScore = 0;
+      document.getElementById("saveButton").disabled = false;
+      document.getElementById("undoButton").disabled = false;
+      document.getElementById("undoButton").style.display = "block";
+      document.querySelectorAll("#diceButtons button").forEach(btn => btn.disabled = false);
       updateUI();
     }
 
     function rollVirtualDie() {
+      playSound('roll');
       const roll = Math.floor(Math.random() * 6) + 1;
       const diceDisplay = document.getElementById("diceDisplay");
-      diceDisplay.innerHTML = `<span class="rolling-die">🎲</span>`;
+      
+      // Limpiar el display
+      diceDisplay.innerHTML = '';
+      
+      // Crear el contenedor de la animación
+      const diceContainer = document.createElement('div');
+      diceContainer.style.position = 'relative';
+      diceContainer.style.display = 'inline-block';
+      
+      // Crear el dado rodando
+      const rollingDie = document.createElement('div');
+      rollingDie.className = 'rolling-die';
+      rollingDie.textContent = '🎲';
+      
+      // Crear la sombra
+      const shadow = document.createElement('div');
+      shadow.className = 'dice-shadow';
+      
+      // Agregar elementos al contenedor
+      diceContainer.appendChild(rollingDie);
+      diceContainer.appendChild(shadow);
+      diceDisplay.appendChild(diceContainer);
 
+      // Después de la animación de rodar, mostrar el resultado
       setTimeout(() => {
-        diceDisplay.innerHTML = `<span class="dice-animation">🎲 ${roll}</span>`;
+        diceContainer.innerHTML = '';
+        
+        // Crear el resultado con animación
+        const resultContainer = document.createElement('div');
+        resultContainer.style.position = 'relative';
+        resultContainer.style.display = 'inline-block';
+        
+        const result = document.createElement('div');
+        result.className = 'dice-result';
+        result.textContent = `🎲 ${roll}`;
+        
+        const resultShadow = document.createElement('div');
+        resultShadow.className = 'dice-shadow';
+        
+        resultContainer.appendChild(result);
+        resultContainer.appendChild(resultShadow);
+        diceDisplay.appendChild(resultContainer);
+        
+        // Procesar el resultado
         addRoll(roll);
-      }, 800);
+      }, 1200);
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
